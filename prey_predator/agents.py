@@ -37,15 +37,16 @@ class Sheep(RandomWalker):
         
         #we reproduce
         if self.random.random() < self.model.sheep_reproduce:
-            self.reproduce()
+            self.reproduce(self)
         
     def eat(self, grass):
         grass.mow()
         self.energy += self.model.sheep_gain_from_food
     
-    def reproduce(self):
-        self.energy //= 2
-        #ajouter nouveau sheep
+
+    def kill(self):
+        self.model.grid.remove_agent(self)
+        self.model.schedule.remove(self)
         
 
 class Wolf(RandomWalker):
@@ -78,15 +79,16 @@ class Wolf(RandomWalker):
     
         #we reproduce
         if self.random.random() < self.model.wolf_reproduce:
-            self.reproduce() 
+            self.reproduce(self)
     
     def eat(self, chosen_sheep):
         chosen_sheep.kill()
         self.energy += self.model.wolf_gain_from_food
-
-    def reproduce(self):
-        self.energy //= 2
-        #ajouter nouveau wolf
+    
+    #Suppression de l'élément si l'agent décède lors du step
+    def kill(self):
+        self.model.grid.remove_agent(self)
+        self.model.schedule.remove(self)
 
 
 class GrassPatch(Agent):

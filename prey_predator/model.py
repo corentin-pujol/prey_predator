@@ -22,24 +22,13 @@ class WolfSheep(Model):
     Wolf-Sheep Predation Model
     """
 
-    height = 20
-    width = 20
-
-    initial_sheep = 100
-    initial_wolves = 50
-
-    sheep_reproduce = 0.04
-    wolf_reproduce = 0.05
-
-    wolf_gain_from_food = 20
-
-    grass = False
-    grass_regrowth_time = 30
-    sheep_gain_from_food = 4
-
     description = (
         "A model for simulating wolf and sheep (predator-prey) ecosystem modelling."
     )
+
+    moore = True
+    sheep_initial_energy = 50
+    wolf_initial_energy = 50
 
     def __init__(
         self,
@@ -91,23 +80,34 @@ class WolfSheep(Model):
         )
 
         # Create sheep:
-        # ... to be completed
+        for _ in range(self.initial_sheep):
+            pos = (self.random.randrange(self.width), self.random.randrange(self.height))
+            sheep = Sheep(self.next_id(), pos, self, self.moore, self.random.randrange(self.sheep_initial_energy))
+            self.schedule.add(sheep)
+            self.grid.place_agent(sheep, pos)
 
-        # Create wolves
-        # ... to be completed
+        # Create wolves:
+        for _ in range(self.initial_wolves):
+            pos = (self.random.randrange(self.width), self.random.randrange(self.height))
+            wolf = Wolf(self.next_id(), pos, self, self.moore, self.random.randrange(self.wolf_initial_energy))
+            self.schedule.add(wolf)
+            self.grid.place_agent(wolf, pos)
 
         # Create grass patches
-        # ... to be completed
+        for x in range(width):
+            for y in range(height):
+                pos = (x, y)
+                grass = GrassPatch(self.next_id(), pos, self, True, self.grass_regrowth_time)
+                self.schedule.add(grass)
+                self.grid.place_agent(grass, pos)
 
     def step(self):
         self.schedule.step()
-
         # Collect data
         self.datacollector.collect(self)
 
-        # ... to be completed
-
     def run_model(self, step_count=200):
-
-        # ... to be completed
+        for _ in range(step_count):
+            self.step()
+            
 

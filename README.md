@@ -1,5 +1,8 @@
 # Prey - Predator Model
 
+PUJOL Corentin et GAUTIER Alexandre
+Nous avons travaillé avec LiveShare, ce qui explique que les pushs viennent d'un seul ordinateur.
+
 ## Summary
 
 A simple ecological model, consisting of three agent types: wolves, sheep, and grass. The wolves and the sheep wander around the grid at random. Wolves and sheep both expend energy moving around, and replenish it by eating. Sheep eat grass, and wolves eat sheep if they end up on the same grid cell.
