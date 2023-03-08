@@ -58,6 +58,18 @@ chart_element = ChartModule(chart)
 
 
 server = ModularServer(
-    WolfSheep, [canvas_element, chart_element], "Prey Predator Model", model_params
+         WolfSheep, 
+         [canvas_element, chart_element], 
+         "Prey Predator Model", 
+         #model_params,
+         {"width":20,
+          "height":20,
+          "initial_sheep": UserSettableParameter("slider", "Sheep quantity", 10, 1, 20, 1),
+          "initial_wolves": UserSettableParameter("slider", "Wolf quantity", 10, 1, 20, 1),
+          "sheep_reproduce": UserSettableParameter("slider", "Sheep reproduce rate", 0.04, 0.01, 0.1, 0.01),
+          "wolf_reproduce": UserSettableParameter("slider", "Wolf reproduce rate", 0.05, 0.01, 0.1, 0.01),
+          "wolf_gain_from_food": UserSettableParameter("slider", "Wolf energy from food", 20, 1, 30, 1),
+          "grass_regrowth_time": UserSettableParameter("slider", "Grass regrowth time", 30, 1, 50, 1),
+          "sheep_gain_from_food": UserSettableParameter("slider", "Sheep energy from food", 4, 1, 30, 1)}
 )
 server.port = 8521
