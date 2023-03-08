@@ -72,12 +72,10 @@ class WolfSheep(Model):
 
         self.schedule = RandomActivationByBreed(self)
         self.grid = MultiGrid(self.height, self.width, torus=True)
-        self.datacollector = DataCollector(
-            {
-                "Wolves": lambda m: m.schedule.get_breed_count(Wolf),
-                "Sheep": lambda m: m.schedule.get_breed_count(Sheep),
-            }
-        )
+        data = {"Wolves": lambda m: m.schedule.get_breed_count(Wolf), "Sheep": lambda m: m.schedule.get_breed_count(Sheep)}
+        if self.grass:
+            data["Grass"] = lambda m: len([grass for grass in m.schedule.agents_by_breed[GrassPatch].values() if grass.is_grown])
+        self.datacollector = DataCollector(data)
 
         # Create sheep:
         for _ in range(self.initial_sheep):

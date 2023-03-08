@@ -3,8 +3,8 @@ Generalized behavior for random walking, one grid cell at a time.
 """
 
 from mesa import Agent
-from prey_predator.agents import Sheep, Wolf
-
+#from prey_predator.agents import Sheep, Wolf
+import prey_predator.agents
 
 class RandomWalker(Agent):
     """
@@ -43,11 +43,15 @@ class RandomWalker(Agent):
         self.model.grid.move_agent(self, next_move)
 
     def reproduce(self, parent):
-        self.parent.energy //= 2
-        if type(parent) is Sheep:
-            child = Sheep(parent.model.next_id(), parent.pos, parent.model, parent.moore, parent.energy)
+        parent.energy //= 2
+        if type(parent) is prey_predator.agents.Sheep:
+            child = prey_predator.agents.Sheep(parent.model.next_id(), parent.pos, parent.model, parent.moore, parent.energy)
         else:
-            child = Wolf(parent.model.next_id(), parent.pos, parent.model, parent.moore, parent.energy)
+            child = prey_predator.agents.Wolf(parent.model.next_id(), parent.pos, parent.model, parent.moore, parent.energy)
 
         parent.model.schedule.add(child)
         parent.model.grid.place_agent(child, parent.pos)
+
+    def kill(self, entity):
+        entity.model.grid.remove_agent(entity)
+        entity.model.schedule.remove(entity)

@@ -32,7 +32,7 @@ class Sheep(RandomWalker):
 
         #we die if we have no energy left
         if self.energy < 0 :
-            self.kill()
+            self.kill(self)
             return
         
         #we reproduce
@@ -42,11 +42,7 @@ class Sheep(RandomWalker):
     def eat(self, grass):
         grass.mow()
         self.energy += self.model.sheep_gain_from_food
-    
 
-    def kill(self):
-        self.model.grid.remove_agent(self)
-        self.model.schedule.remove(self)
         
 
 class Wolf(RandomWalker):
@@ -63,18 +59,19 @@ class Wolf(RandomWalker):
         self.random_move()
 
         #then we eat a sheep if we can
-        entities_on_cell = self.model.grid.get_cell_list_contents([self.pos])
-        sheep_on_cell = [ent for ent in entities_on_cell if type(ent) is Sheep]
-        if len(sheep_on_cell)>0:
-            chosen_sheep = self.random.choice(sheep_on_cell)
-            self.eat(chosen_sheep)
+        if self.energy < 25:
+            entities_on_cell = self.model.grid.get_cell_list_contents([self.pos])
+            sheep_on_cell = [ent for ent in entities_on_cell if type(ent) is Sheep]
+            if len(sheep_on_cell)>0:
+                chosen_sheep = self.random.choice(sheep_on_cell)
+                self.eat(chosen_sheep)
         
         #we loose energy
         self.energy -= 1
 
         #we die if we have no energy left
         if self.energy < 0 :
-            self.kill()
+            self.kill(self)
             return
     
         #we reproduce
@@ -82,13 +79,8 @@ class Wolf(RandomWalker):
             self.reproduce(self)
     
     def eat(self, chosen_sheep):
-        chosen_sheep.kill()
+        chosen_sheep.kill(chosen_sheep)
         self.energy += self.model.wolf_gain_from_food
-    
-    #Suppression de l'élément si l'agent décède lors du step
-    def kill(self):
-        self.model.grid.remove_agent(self)
-        self.model.schedule.remove(self)
 
 
 class GrassPatch(Agent):
