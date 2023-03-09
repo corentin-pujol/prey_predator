@@ -9,9 +9,10 @@ class Sheep(RandomWalker):
     The init is the same as the RandomWalker.
     """
 
-    def __init__(self, unique_id, pos, model, moore, energy=None):
+    def __init__(self, unique_id, pos, model, moore, energy, energy_thresh):
         super().__init__(unique_id, pos, model, moore=moore)
         self.energy = energy
+        self.energy_thresh = energy_thresh #Le seuil en dessous duquel l'agent peut se nourrir (seuil de faim)
 
     def step(self):
         """
@@ -20,8 +21,8 @@ class Sheep(RandomWalker):
         #first, we move
         self.random_move()
 
-        #then we eat grass if we can
-        if self.model.grass:
+        #then we eat grass if we can and if we are hungry
+        if self.model.grass and self.energy < self.energy_thresh:
             entities_on_cell = self.model.grid.get_cell_list_contents([self.pos])
             grass = [ent for ent in entities_on_cell if type(ent) is GrassPatch][0]
             if grass.is_grown:
@@ -50,16 +51,17 @@ class Wolf(RandomWalker):
     A wolf that walks around, reproduces (asexually) and eats sheep.
     """
 
-    def __init__(self, unique_id, pos, model, moore, energy=None):
+    def __init__(self, unique_id, pos, model, moore, energy, energy_thresh):
         super().__init__(unique_id, pos, model, moore=moore)
         self.energy = energy
+        self.energy_thresh = energy_thresh #Le seuil en dessous duquel l'agent peut se nourrir (seuil de faim)
 
     def step(self):
         #first, we move
         self.random_move()
 
-        #then we eat a sheep if we can
-        if self.energy < 25:
+        #then we eat a sheep if we can and if we are hungry
+        if self.energy < self.energy_thresh:
             entities_on_cell = self.model.grid.get_cell_list_contents([self.pos])
             sheep_on_cell = [ent for ent in entities_on_cell if type(ent) is Sheep]
             if len(sheep_on_cell)>0:
@@ -103,10 +105,10 @@ class GrassPatch(Agent):
         self.countdown = countdown
 
     def step(self):
-        if self.is_grown:
+        if self.is_grown:   #nothing to do
             return
         
-        self.timer -= 1
+        self.timer -= 1     #update internal clock to grow
         if self.timer < 0:
             self.is_grown=True
 

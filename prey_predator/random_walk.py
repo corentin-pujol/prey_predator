@@ -43,15 +43,17 @@ class RandomWalker(Agent):
         self.model.grid.move_agent(self, next_move)
 
     def reproduce(self, parent):
+        """When an agent reproduces, its energy is halved and it creates a child with similar parameters"""
         parent.energy //= 2
         if type(parent) is prey_predator.agents.Sheep:
-            child = prey_predator.agents.Sheep(parent.model.next_id(), parent.pos, parent.model, parent.moore, parent.energy)
+            child = prey_predator.agents.Sheep(parent.model.next_id(), parent.pos, parent.model, parent.moore, parent.energy, parent.energy_thresh)
         else:
-            child = prey_predator.agents.Wolf(parent.model.next_id(), parent.pos, parent.model, parent.moore, parent.energy)
+            child = prey_predator.agents.Wolf(parent.model.next_id(), parent.pos, parent.model, parent.moore, parent.energy, parent.energy_thresh)
 
         parent.model.schedule.add(child)
         parent.model.grid.place_agent(child, parent.pos)
 
     def kill(self, entity):
+        """Dynamic deletion of the agent"""
         entity.model.grid.remove_agent(entity)
         entity.model.schedule.remove(entity)

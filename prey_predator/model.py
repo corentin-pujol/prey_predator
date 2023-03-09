@@ -27,8 +27,6 @@ class WolfSheep(Model):
     )
 
     moore = True
-    sheep_initial_energy = 50
-    wolf_initial_energy = 50
 
     def __init__(
         self,
@@ -42,6 +40,9 @@ class WolfSheep(Model):
         grass=False,
         grass_regrowth_time=30,
         sheep_gain_from_food=4,
+        show_energy=False,
+        sheep_initial_energy = 50,
+        wolf_initial_energy = 50
     ):
         """
         Create a new Wolf-Sheep model with the given parameters.
@@ -56,6 +57,8 @@ class WolfSheep(Model):
             grass_regrowth_time: How long it takes for a grass patch to regrow
                                  once it is eaten
             sheep_gain_from_food: Energy sheep gain from grass, if enabled.
+            sheep_initial_energy: Sheep maximal initial energy
+            wolf_initial_energy: Wolves maximal initial energy
         """
         super().__init__()
         # Set parameters
@@ -69,25 +72,28 @@ class WolfSheep(Model):
         self.grass = grass
         self.grass_regrowth_time = grass_regrowth_time
         self.sheep_gain_from_food = sheep_gain_from_food
+        self.show_energy = show_energy
+        self.sheep_initial_energy = sheep_initial_energy
+        self.wolf_initial_energy = wolf_initial_energy
 
         self.schedule = RandomActivationByBreed(self)
         self.grid = MultiGrid(self.height, self.width, torus=True)
         data = {"Wolves": lambda m: m.schedule.get_breed_count(Wolf), "Sheep": lambda m: m.schedule.get_breed_count(Sheep)}
         if self.grass:
-            data["Grass"] = lambda m: len([grass for grass in m.schedule.agents_by_breed[GrassPatch].values() if grass.is_grown])
+            data["Grass"] = lambda m: len([grass for grass in m.schedule.agents_by_breed[GrassPatch].values() if grass.is_grown])   #We only collect the number of grown grass
         self.datacollector = DataCollector(data)
 
         # Create sheep:
         for _ in range(self.initial_sheep):
             pos = (self.random.randrange(self.width), self.random.randrange(self.height))
-            sheep = Sheep(self.next_id(), pos, self, self.moore, self.random.randrange(self.sheep_initial_energy))
+            sheep = Sheep(self.next_id(), pos, self, self.moore, self.random.randrange(self.sheep_initial_energy), self.sheep_initial_energy//2)
             self.schedule.add(sheep)
             self.grid.place_agent(sheep, pos)
 
         # Create wolves:
         for _ in range(self.initial_wolves):
             pos = (self.random.randrange(self.width), self.random.randrange(self.height))
-            wolf = Wolf(self.next_id(), pos, self, self.moore, self.random.randrange(self.wolf_initial_energy))
+            wolf = Wolf(self.next_id(), pos, self, self.moore, self.random.randrange(self.wolf_initial_energy), self.wolf_initial_energy//2)
             self.schedule.add(wolf)
             self.grid.place_agent(wolf, pos)
 
